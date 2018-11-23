@@ -41,8 +41,37 @@ namespace sequence {
 
         string toString() {
             stringstream s;
-            for (int i = 0; i < size; ++i) {
+            for (long i = size - 1; i >= 0; --i) {
                 s << (int) F[i];
+            }
+            return s.str();
+        }
+
+        unsigned long toNum() {
+            unsigned long N = 0;
+            for (long i = size - 1; i >= 0; --i) {
+                N <<= 1;
+                N |= F[i];
+            }
+            return N;
+        }
+
+        string splitToPrimeNumbers() {
+            unsigned long n = toNum();
+            int div = 2;
+            stringstream s;
+            bool first = true;
+            while (n > 1) {
+                while (n % div == 0) {
+                    if (!first) {
+                        s << " * ";
+                    } else {
+                        first = false;
+                    }
+                    s << div;
+                    n = n / div;
+                }
+                div++;
             }
             return s.str();
         }
@@ -54,24 +83,28 @@ namespace sequence {
     }
 
     void main() {
-        int n = 4;
+        int n = 5;
         BFunction f(n);
         int numFound = 0;
         do {
             unsigned long current = 0;
             stringstream s;
-            s << f << ": ";
             int i = 0;
             do {
                 s << (current & 1);
                 current = ((current << 1) | f(current)) & ((1 << n) - 1);
             } while ((current != 0) && (i++ < ((1 << n) + 2)));
             if (current == 0 && i == ((1 << n) - 1)) {
-                cout << (++numFound) <<": "<< s.str() << " : " << i << endl;
+                cout << (++numFound) << ": "
+                     << f.toNum() << " = "
+                     << f.splitToPrimeNumbers() << ": "
+                     << f << ": "
+                     << s.str() << " : " << i << endl;
             }
             f.next();
         } while (!f.isZero());
     }
+
 }
 
 int main(int argc, const char *argv[]) {
